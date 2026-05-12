@@ -150,11 +150,11 @@ for iteration in range(num_iter):
 
 # Convert frames to video
 fourcc = cv2.VideoWriter.fourcc(*'mp4v')
-out = cv2.VideoWriter('training.mp4', fourcc, 80.0, (300, 200))
+out = cv2.VideoWriter('training.mp4', fourcc, 60.0, (225, 150))
 frames = frames.astype(np.uint8)
 for frame in frames:
     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-    frame = cv2.resize(frame, (300, 200))
+    frame = cv2.resize(frame, (225, 150))
     out.write(frame)
 
 out.release()
