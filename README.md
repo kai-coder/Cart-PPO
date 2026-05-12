@@ -1,3 +1,3 @@
-<video controls="" width="600" height="400" muted="" loop="" autoplay="">
-<source src="https://github.com/kai-coder/Cart-PPO/raw/main/training.mp4" type="video/mp4">
-</video>
+Trained a policy using the PPO algorithm
+
+<img width="600" height="400" alt="training" src="https://github.com/user-attachments/assets/f474dc55-5b35-420e-ad38-60b6341506fa" />
