@@ -1,1 +1,3 @@
-<video src="https://github.com/user-attachments/assets/be00a2eb-57b0-4e83-ac79-0182a6c732fb" width="300" height="200" controls></video>
+<video controls="" width="600" height="400" muted="" loop="" autoplay="">
+<source src="https://github.com/kai-coder/Cart-PPO/raw/main/training.mp4" type="video/mp4">
+</video>
