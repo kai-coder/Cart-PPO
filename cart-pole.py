@@ -6,6 +6,7 @@ from model import CartNet
 from ModifiedCartPoleVectorEnv import ModifiedCartPoleVectorEnv
 from blah import fillFrame
 import cv2
+import imageio
 
 # Training hyperparameters
 num_envs = 21
@@ -148,13 +149,5 @@ for iteration in range(num_iter):
     if (iteration + 1) % 10 == 0:
         fillFrame(iteration + 1, frames, int((iteration + 1) / 10) , model, env, num_timesteps, num_envs, DEVICE)
 
-# Convert frames to video
-fourcc = cv2.VideoWriter.fourcc(*'mp4v')
-out = cv2.VideoWriter('training.mp4', fourcc, 60.0, (225, 150))
 frames = frames.astype(np.uint8)
-for frame in frames:
-    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-    frame = cv2.resize(frame, (225, 150))
-    out.write(frame)
-
-out.release()
+imageio.mimsave('training.gif', frames, fps=60)
