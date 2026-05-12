@@ -150,4 +150,4 @@ for iteration in range(num_iter):
         fillFrame(iteration + 1, frames, int((iteration + 1) / 10) , model, env, num_timesteps, num_envs, DEVICE)
 
 frames = frames.astype(np.uint8)
-imageio.mimsave('training.gif', frames, fps=60)
+imageio.mimsave('training.gif', frames[::3], fps=20)
