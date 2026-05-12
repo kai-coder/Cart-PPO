@@ -128,8 +128,6 @@ class ModifiedCartPoleVectorEnv(classic_control.cartpole.CartPoleVectorEnv):
             pygame.font.init()
             pygame.display.init()
 
-
-
             self.screen = pygame.display.set_mode(
                 (self.screen_width, self.screen_height)
             )
