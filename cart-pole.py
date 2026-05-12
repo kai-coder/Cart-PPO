@@ -9,8 +9,8 @@ import cv2
 import imageio
 
 # Training hyperparameters
-num_envs = 21
-num_iter = 40
+num_envs = 1024
+num_iter = 50
 num_timesteps = 256
 discount_factor = 0.99
 GAE_param = 0.95
@@ -40,7 +40,7 @@ for _ in range(3):
     for t in range(num_timesteps + 1):
         env.step(env.action_space.sample())
 
-frames = np.empty((num_timesteps * 5, 400, 600, 3))
+frames = np.empty((num_timesteps * 6, 400, 600, 3))
 
 fillFrame(0, frames, 0, model, env, num_timesteps, num_envs, DEVICE)
 
