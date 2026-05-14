@@ -40,7 +40,7 @@ for _ in range(3):
     for t in range(num_timesteps + 1):
         env.step(env.action_space.sample())
 
-frames = np.empty((num_timesteps * 6, 400, 600, 3))
+frames = np.empty((num_timesteps * int(num_iter // 10 + 1), 400, 600, 3))
 
 fillFrame(0, frames, 0, model, env, num_timesteps, num_envs, DEVICE)
 

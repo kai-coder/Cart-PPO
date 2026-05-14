@@ -104,11 +104,12 @@ class ModifiedCartPoleVectorEnv(classic_control.cartpole.CartPoleVectorEnv):
             options: dict | None = None,
     ):
         super().reset(seed=seed)
+        np.random.seed(0)
         # Note that if you use custom reset bounds, it may lead to out-of-bound
         # state/observations.
         # -0.05 and 0.05 is the default low and high bounds
         self.low, self.high = utils.maybe_parse_reset_bounds(options, -0.2, 0.2)
-        self.state = self.np_random.uniform(
+        self.state = np.random.uniform(
             low=self.low, high=self.high, size=(4, self.num_envs)
         )
         self.state[2, :] += np.pi
@@ -123,6 +124,7 @@ class ModifiedCartPoleVectorEnv(classic_control.cartpole.CartPoleVectorEnv):
         # if self.render_mode == "human":
         #    self.render()
         return state2.T.astype(np.float32), {}
+
     def render(self, epoch, order):
         if self.screen is None:
             pygame.font.init()
@@ -151,6 +153,7 @@ class ModifiedCartPoleVectorEnv(classic_control.cartpole.CartPoleVectorEnv):
         for idx, o in enumerate(order[-20:]):
 
             x = self.state.T[o]
+
             if (idx == len(order[-20:]) - 1):
                 percentage = 1
             else:
