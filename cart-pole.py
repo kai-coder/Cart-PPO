@@ -12,7 +12,7 @@ num_iter = 60
 repeat_num = 10
 num_timesteps = 256
 discount_factor = 0.99
-GAE_param = 0.97
+GAE_param = 0.95
 clip_factor = 0.2
 lr = 1e-4
 
