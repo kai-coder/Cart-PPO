@@ -8,7 +8,7 @@ import imageio
 
 # Training hyperparameters
 num_envs = 1024
-num_iter = 50
+num_iter = 60
 repeat_num = 10
 num_timesteps = 256
 discount_factor = 0.99
@@ -39,7 +39,7 @@ for _ in range(3):
     for t in range(num_timesteps + 1):
         env.step(env.action_space.sample())
 
-frames = np.empty((num_timesteps * int(num_iter // 10 + 1), 400, 600, 3))
+frames = np.empty((num_timesteps * int(num_iter // 20 + 1), 400, 600, 3))
 
 create_video(0, 0, frames, model, env.env.env, env.env, num_timesteps, num_envs, DEVICE)
 
@@ -146,8 +146,8 @@ for iteration in range(num_iter):
             policy_loss.backward()
             optimizer.step()
 
-    if (iteration + 1) % 10 == 0:
-        create_video(iteration + 1, int((iteration + 1) / 10), frames, model, env.env.env, env.env, num_timesteps, num_envs, DEVICE)
+    if (iteration + 1) % 20 == 0:
+        create_video(iteration + 1, int((iteration + 1) / 20), frames, model, env.env.env, env.env, num_timesteps, num_envs, DEVICE)
 
 # Store frames as gif
 frames = frames.astype(np.uint8)
