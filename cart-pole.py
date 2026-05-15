@@ -3,22 +3,21 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 from model import CartNet
-from ModifiedCartPoleVectorEnv import ModifiedCartPoleVectorEnv
-from blah import fillFrame
-import cv2
+from utils import create_video, ModifiedCartPoleVectorEnv
 import imageio
 
 # Training hyperparameters
 num_envs = 1024
 num_iter = 50
+repeat_num = 10
 num_timesteps = 256
 discount_factor = 0.99
-GAE_param = 0.95
+GAE_param = 0.97
 clip_factor = 0.2
 lr = 1e-4
 
 # Use Updated Cart Pole Environment
-env = ModifiedCartPoleVectorEnv(num_envs=num_envs, max_episode_steps=500, render_mode=None)
+env = ModifiedCartPoleVectorEnv(num_envs=num_envs, max_episode_steps=num_timesteps, render_mode=None)
 
 # Normalize and clip observations
 env = gym.wrappers.vector.NormalizeObservation(env)
@@ -42,7 +41,7 @@ for _ in range(3):
 
 frames = np.empty((num_timesteps * int(num_iter // 10 + 1), 400, 600, 3))
 
-fillFrame(0, frames, 0, model, env, num_timesteps, num_envs, DEVICE)
+create_video(0, 0, frames, model, env.env.env, env.env, num_timesteps, num_envs, DEVICE)
 
 for iteration in range(num_iter):
     data = {
@@ -127,7 +126,7 @@ for iteration in range(num_iter):
 
     # train model using PPO algorithm
     model.train()
-    for epoch in range(10):
+    for epoch in range(repeat_num):
         for batch in data_loader:
             state, values, reward, log_probs, actions, advantages = batch
 
@@ -146,8 +145,10 @@ for iteration in range(num_iter):
             optimizer.zero_grad()
             policy_loss.backward()
             optimizer.step()
-    if (iteration + 1) % 10 == 0:
-        fillFrame(iteration + 1, frames, int((iteration + 1) / 10) , model, env, num_timesteps, num_envs, DEVICE)
 
+    if (iteration + 1) % 10 == 0:
+        create_video(iteration + 1, int((iteration + 1) / 10), frames, model, env.env.env, env.env, num_timesteps, num_envs, DEVICE)
+
+# Store frames as gif
 frames = frames.astype(np.uint8)
 imageio.mimsave('training.gif', frames[::3], fps=20)

@@ -1,12 +1,14 @@
-import gymnasium as gym
 from gymnasium.envs import classic_control
 import pygame
 from pygame import gfxdraw
 from gymnasium.envs.classic_control import utils
 import numpy as np
 from gymnasium.vector.utils import batch_space
-from gymnasium import logger, spaces
+from gymnasium import spaces
+import torch
+import gymnasium as gym
 
+# Modified Cart Pole Env that changes initial states and drawing methods
 class ModifiedCartPoleVectorEnv(classic_control.cartpole.CartPoleVectorEnv):
     def __init__(self, *args, **kwargs):
         self.clock = pygame.time.Clock()
@@ -104,12 +106,11 @@ class ModifiedCartPoleVectorEnv(classic_control.cartpole.CartPoleVectorEnv):
             options: dict | None = None,
     ):
         super().reset(seed=seed)
-        np.random.seed(0)
         # Note that if you use custom reset bounds, it may lead to out-of-bound
         # state/observations.
         # -0.05 and 0.05 is the default low and high bounds
         self.low, self.high = utils.maybe_parse_reset_bounds(options, -0.2, 0.2)
-        self.state = np.random.uniform(
+        self.state = self.np_random.uniform(
             low=self.low, high=self.high, size=(4, self.num_envs)
         )
         self.state[2, :] += np.pi
@@ -286,3 +287,38 @@ class ModifiedCartPoleVectorEnv(classic_control.cartpole.CartPoleVectorEnv):
         return np.transpose(
                 np.array(pygame.surfarray.pixels3d(self.screen)), axes=(1, 0, 2)
             )
+
+
+def create_video(epoch: int, video_num: int, frames: np.ndarray, model: torch.nn.Module,
+                 env: gym.Env, norm_env: gym.Wrapper, num_timesteps: int, num_envs: int, device: torch.device) -> None:
+    # Freeze updates
+    model.eval()
+    norm_env._update_running_mean = False
+
+    # Collect rewards information
+    observation, info = env.reset(seed=0)
+    all_rewards = np.zeros((num_timesteps, num_envs))
+    for t in range(num_timesteps):
+        observation = torch.from_numpy(observation).float().to(device)
+        actions, log_probs, values = model(observation, inference=True)
+
+        observation, reward, terminated, truncated, info = env.step(np.array(actions.cpu()))
+        all_rewards[t] = reward
+
+    # Sort indexes based on total score
+    sorted_idx = np.argsort(all_rewards.sum(axis=0))
+
+
+    observation, info = env.reset(seed=0)
+    for t in range(num_timesteps):
+        observation = torch.from_numpy(observation).float().to(device)
+        actions, log_probs, values = model(observation, inference=True)
+
+        observation, reward, terminated, truncated, info = env.step(np.array(actions.cpu()))
+
+        # Feed sorted indexes into display method
+        frame = env.render(epoch, sorted_idx)
+        frames[video_num * num_timesteps + t] = frame
+
+    # Unfreeze environment
+    norm_env._update_running_mean = True
